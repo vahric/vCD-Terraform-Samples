@@ -1,0 +1,10 @@
+# Ignore Hidden Files
+.*
+
+# Ignore files by extension
+*.hcl
+*.tfstate
+*.backup
+
+# Do not ignoring files
+!.gitignore

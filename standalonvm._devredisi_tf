@@ -1,0 +1,55 @@
+#Standalone sanal sunucu oluşturalim
+#https://registry.terraform.io/providers/vmware/vcd/latest/docs/resources/vm
+
+    resource "vcd_vm" "DBServer1"{
+      name="DBServer1"
+      computer_name="DB1"
+      description="TestStandaloneSanalSunucu"
+
+#DorukCloud'da musterilerin hizli kurulum yapmalari için paylastirilmis kataloglardan biri ve o katalogdaki imajin adi verilmis
+
+      catalog_name="Doruknet-Linux-Templates"
+      template_name="vCD-Centos7-Minimal-Template"
+      cpus=2
+      memory=2048
+
+#Zorunlu olmayan bir k/v fakat ozellikle sanal sunucularinizi kapatip acmaya gerek kalmadan ram/cpu eklemek icin kullanabilirsiniz
+
+      cpu_hot_add_enabled=true
+      memory_hot_add_enabled=true
+      power_on=false
+
+#Storage profile verilmesi zorunlu degil fakat birden fazla storage profile atanmis musteriler icin secimin nasil
+#yapilabilecegini gostermek amaciyla eklenmistir.
+
+      storage_profile="AllFlash7200-B-DSC-01"
+
+#Sanal sunucuyu baglayacagimiz networku belirtin
+#Asagida daha once terraform ile olusturulmus olan databasenetwork kaynaginda belirtilmis networke baglanacagimizi belirtiyoruz
+#name burada birdegisken olarak geliyor ve DBNetwork1'i isaret ediyor...
+
+    network{
+      name=vcd_network_routed_v2.DBServerNetwork.name
+      type="org"
+      ip_allocation_mode="POOL"
+    }
+
+#Ozellestirme ise daha cok windows'lardaki sysprep gibi dersek bir cagirism yapabilir
+#Burada kurmak istediğimiz Centos'un sifresinin otomatik atanmasini istiyoruz
+
+    customization{
+      enabled=true
+      allow_local_admin_password=true
+      auto_generate_password=true
+    }
+
+#Sunucu ile ilgili tag'lamanız gereken bilgiler var ise belirtebilirsiniz
+
+    metadata={
+      role="web"
+      env="staging"
+      version="v1"
+      my_key="myvalue"
+    }
+
+}
